@@ -7,7 +7,7 @@ import (
     "net/http"
     "time"
 
-    "ozon_reports_downloader/common"
+    "github.com/execut/ozon-reports-downloader/common"
 
     "github.com/google/uuid"
 )

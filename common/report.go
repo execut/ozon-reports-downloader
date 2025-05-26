@@ -3,7 +3,8 @@ package common
 import (
     "fmt"
     "os"
-    "ozon_reports_downloader/file"
+
+    "github.com/execut/ozon-reports-downloader/file"
 )
 
 type IDownloader interface {

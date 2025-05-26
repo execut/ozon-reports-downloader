@@ -2,10 +2,11 @@ package orders
 
 import (
     "encoding/json"
-    "github.com/google/uuid"
-    "ozon_reports_downloader/common"
     "strconv"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/common"
+    "github.com/google/uuid"
 )
 
 type Client struct {

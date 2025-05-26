@@ -1,7 +1,7 @@
 package trafarets_detalization
 
 import (
-    "ozon_reports_downloader/common"
+    "github.com/execut/ozon-reports-downloader/common"
     "time"
 )
 

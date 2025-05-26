@@ -3,17 +3,18 @@ package main
 import (
     "gopkg.in/yaml.v3"
     "os"
-    "ozon_reports_downloader/accruals"
-    "ozon_reports_downloader/analytics"
-    "ozon_reports_downloader/common"
-    "ozon_reports_downloader/leftovers"
-    "ozon_reports_downloader/orders"
-    "ozon_reports_downloader/prices"
-    "ozon_reports_downloader/returns"
-    "ozon_reports_downloader/trafarets_detalization"
-    "ozon_reports_downloader/warehousing_cost"
     "path/filepath"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/accruals"
+    "github.com/execut/ozon-reports-downloader/analytics"
+    "github.com/execut/ozon-reports-downloader/common"
+    "github.com/execut/ozon-reports-downloader/leftovers"
+    "github.com/execut/ozon-reports-downloader/orders"
+    "github.com/execut/ozon-reports-downloader/prices"
+    "github.com/execut/ozon-reports-downloader/returns"
+    "github.com/execut/ozon-reports-downloader/trafarets_detalization"
+    "github.com/execut/ozon-reports-downloader/warehousing_cost"
 )
 
 func main() {

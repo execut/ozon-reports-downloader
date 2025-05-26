@@ -1,7 +1,7 @@
 package accruals
 
 import (
-    "ozon_reports_downloader/file"
+    "github.com/execut/ozon-reports-downloader/file"
 )
 
 type Downloader struct {

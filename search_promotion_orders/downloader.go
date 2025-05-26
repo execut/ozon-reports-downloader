@@ -3,7 +3,7 @@ package search_promotion_orders
 import (
     "errors"
     "fmt"
-    "ozon_reports_downloader/file"
+    "github.com/execut/ozon-reports-downloader/file"
     "time"
 )
 

@@ -1,7 +1,7 @@
 package leftovers
 
 import (
-    "ozon_reports_downloader/common"
+    "github.com/execut/ozon-reports-downloader/common"
 )
 
 type Client struct {

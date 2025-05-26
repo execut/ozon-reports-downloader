@@ -2,8 +2,8 @@ package prices
 
 import (
     "encoding/json"
+    "github.com/execut/ozon-reports-downloader/common"
     "github.com/google/uuid"
-    "ozon_reports_downloader/common"
     "strconv"
 )
 

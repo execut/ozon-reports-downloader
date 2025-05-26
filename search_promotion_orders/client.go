@@ -3,7 +3,7 @@ package search_promotion_orders
 import (
     "encoding/json"
     "github.com/google/uuid"
-    "ozon_reports_downloader/common"
+    "github.com/execut/ozon-reports-downloader/common"
     "time"
 )
 

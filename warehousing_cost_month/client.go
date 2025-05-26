@@ -1,7 +1,7 @@
 package warehousing_cost_month
 
 import (
-    "ozon_reports_downloader/common"
+    "github.com/execut/ozon-reports-downloader/common"
     "strconv"
     "time"
 )

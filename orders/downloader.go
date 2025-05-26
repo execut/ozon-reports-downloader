@@ -3,9 +3,10 @@ package orders
 import (
     "encoding/base64"
     "fmt"
-    "ozon_reports_downloader/common"
-    "ozon_reports_downloader/file"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/common"
+    "github.com/execut/ozon-reports-downloader/file"
 )
 
 type Downloader struct {

@@ -3,8 +3,9 @@ package analytics
 import (
     "encoding/json"
     "github.com/google/uuid"
-    "ozon_reports_downloader/common"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/common"
 )
 
 type Client struct {

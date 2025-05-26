@@ -2,8 +2,9 @@ package analytics
 
 import (
     "fmt"
-    "ozon_reports_downloader/file"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/file"
 )
 
 type Downloader struct {
