@@ -1,7 +1,7 @@
 package main
 
 import (
-    "gopkg.in/yaml.v3"
+    "fmt"
     "os"
     "path/filepath"
     "time"
@@ -15,6 +15,7 @@ import (
     "github.com/execut/ozon-reports-downloader/returns"
     "github.com/execut/ozon-reports-downloader/trafarets_detalization"
     "github.com/execut/ozon-reports-downloader/warehousing_cost"
+    "gopkg.in/yaml.v3"
 )
 
 func main() {
@@ -28,12 +29,14 @@ func main() {
         panic(err)
     }
 
+    fmt.Printf("Begin report download for date %v\n", prevDate)
+
     config := ReadConfig()
     reports := []*common.Report{
         common.NewReport("trafarets", trafarets_detalization.NewDownloader(config.CompanyID, config.OrganizationID, config.Cookie)),
         //common.NewReport("search-promotion-orders", search_promotion_orders.NewDownloader(config.CompanyID, config.OrganizationID, config.Cookie)),
-        common.NewReport("orders-fbo", orders.NewDownloader(common.DeliveryTypeFBO, config.CompanyID, config.Cookie)),
-        common.NewReport("orders-fbs", orders.NewDownloader(common.DeliveryTypeFBS, config.CompanyID, config.Cookie)),
+        common.NewReport("orders-fbo", orders.NewDownloader(common.DeliveryTypeFBO, config.CompanyID, config.Cookie, time.Now())),
+        common.NewReport("orders-fbs", orders.NewDownloader(common.DeliveryTypeFBS, config.CompanyID, config.Cookie, time.Now())),
         common.NewReport("returns-fbos", returns.NewDownloader(returns.ReturnsTypeFBOS, config.CompanyID, config.Cookie)),
         common.NewReport("returns-realfbs", returns.NewDownloader(returns.ReturnsTypeRealFBS, config.CompanyID, config.Cookie)),
         common.NewReport("analytics", analytics.NewDownloader(prevDate, config.Cookie, config.CompanyID)),
@@ -48,6 +51,8 @@ func main() {
         if err != nil {
             panic(err)
         }
+
+        time.Sleep(time.Second)
     }
 }
 

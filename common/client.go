@@ -11,6 +11,11 @@ import (
     "strconv"
 )
 
+const (
+    secChUa   = "\"Not)A;Brand\";v=\"8\", \"Chromium\";v=\"138\", \"Google Chrome\";v=\"138\""
+    userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+)
+
 func DoRequest(data interface{}, url string, cookie string, companyID int64) ([]byte, error) {
     return doRequest(data, url, http.MethodPost, cookie, companyID)
 }
@@ -61,13 +66,13 @@ func doRequest(data interface{}, url string, requestType string, cookie string, 
         "Origin":             "https://seller.ozon.ru",
         "pragma":             "no-cache",
         "Priority":           "u=1, i",
-        "Sec-Ch-Ua":          "\"Chromium\";v=\"134\", \"Not:A-Brand\";v=\"24\", \"Google Chrome\";v=\"134\"",
+        "Sec-Ch-Ua":          secChUa,
         "Sec-Ch-Ua-Mobile":   "?0",
         "Sec-Ch-Ua-Platform": "\"Linux\"",
         "Sec-Fetch-Dest":     "empty",
         "Sec-Fetch-Mode":     "cors",
         "Sec-Fetch-Site":     "same-origin",
-        "User-Agent":         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+        "User-Agent":         userAgent,
         "X-O3-App-Name":      "seller-ui",
         "X-O3-Company-Id":    strconv.FormatInt(companyID, 10),
         "X-O3-Language":      "ru",
@@ -115,15 +120,14 @@ func DoPostPerformanceRequest(data interface{}, url string, companyID int64, org
         "Content-Type":                  "application/json",
         "Cookie":                        cookie,
         "Origin":                        "https://seller.ozon.ru",
-        "pragma":                        "no-cache",
         "Priority":                      "u=1, i",
-        "Sec-Ch-Ua":                     "\"Chromium\";v=\"134\", \"Not:A-Brand\";v=\"24\", \"Google Chrome\";v=\"134\"",
+        "Sec-Ch-Ua":                     secChUa,
         "Sec-Ch-Ua-Mobile":              "?0",
         "Sec-Ch-Ua-Platform":            "\"Linux\"",
         "Sec-Fetch-Dest":                "empty",
         "Sec-Fetch-Mode":                "cors",
         "Sec-Fetch-Site":                "same-origin",
-        "User-Agent":                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+        "User-Agent":                    userAgent,
         "x-o3-adv-current-organisation": strconv.FormatInt(organizationID, 10),
         "X-O3-App-Name":                 "performance-sc",
         "X-O3-Company-Id":               strconv.FormatInt(companyID, 10),

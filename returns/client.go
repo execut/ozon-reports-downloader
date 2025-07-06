@@ -19,8 +19,7 @@ func NewClient() *Client {
     return &Client{}
 }
 
-func (c *Client) BeginDownload(companyID int64, returnsType ReturnsType, cookie string) (*uuid.UUID, error) {
-    now := time.Now().In(time.UTC)
+func (c *Client) BeginDownload(companyID int64, returnsType ReturnsType, cookie string, now time.Time) (*uuid.UUID, error) {
     atTo := now.Truncate(time.Hour * 24).Add(-time.Second)
     var data interface{}
     var atFrom time.Time

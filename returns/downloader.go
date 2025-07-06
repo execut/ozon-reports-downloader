@@ -25,7 +25,8 @@ func NewDownloader(returnsType ReturnsType, companyID int64, cookie string) *Dow
 }
 
 func (d Downloader) Download() (*file.File, error) {
-    uuid, err := d.client.BeginDownload(d.companyID, d.returnsType, d.cookie)
+    date := time.Now()
+    uuid, err := d.client.BeginDownload(d.companyID, d.returnsType, d.cookie, date)
     if err != nil {
         return nil, err
     }

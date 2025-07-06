@@ -16,10 +16,9 @@ func NewClient() *Client {
     return &Client{}
 }
 
-func (c *Client) BeginDownload(orderType common.DeliveryType, companyID int64, cookie string) (*uuid.UUID, error) {
-    now := time.Now().In(time.UTC)
-    atTo := now.Truncate(time.Hour * 24).Add(-time.Second)
-    atFrom := now.Truncate(time.Hour*24).AddDate(0, -3, 0)
+func (c *Client) BeginDownload(orderType common.DeliveryType, companyID int64, cookie string, currentTime time.Time) (*uuid.UUID, error) {
+    atTo := currentTime.Truncate(time.Hour * 24).Add(-time.Second)
+    atFrom := currentTime.Truncate(time.Hour*24).AddDate(0, -3, 0)
     data := StartPayload{
         Filter: Filter{
             ProcessedAtTo:   atTo,
