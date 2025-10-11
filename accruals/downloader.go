@@ -5,21 +5,17 @@ import (
 )
 
 type Downloader struct {
-    client    *Client
-    cookie    string
-    companyID int64
+    client *Client
 }
 
-func NewDownloader(cookie string, companyID int64) *Downloader {
+func NewDownloader(client *Client) *Downloader {
     return &Downloader{
-        client:    &Client{},
-        cookie:    cookie,
-        companyID: companyID,
+        client: client,
     }
 }
 
 func (d Downloader) Download() (*file.File, error) {
-    data, err := d.client.Download(d.cookie, d.companyID)
+    data, err := d.client.Download()
     if err != nil {
         return nil, err
     }

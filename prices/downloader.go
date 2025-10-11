@@ -2,26 +2,23 @@ package prices
 
 import (
     "fmt"
-    "github.com/execut/ozon-reports-downloader/file"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/file"
 )
 
 type Downloader struct {
-    client    *Client
-    companyID int64
-    cookie    string
+    client *Client
 }
 
-func NewDownloader(companyID int64, cookie string) *Downloader {
+func NewDownloader(client *Client) *Downloader {
     return &Downloader{
-        client:    &Client{},
-        companyID: companyID,
-        cookie:    cookie,
+        client: client,
     }
 }
 
 func (d Downloader) Download() (*file.File, error) {
-    uuid, err := d.client.BeginDownload(d.companyID, d.cookie)
+    uuid, err := d.client.BeginDownload()
     if err != nil {
         return nil, err
     }
@@ -30,7 +27,7 @@ func (d Downloader) Download() (*file.File, error) {
 
     for {
         time.Sleep(time.Second * 5)
-        status, errStatus := d.client.Status(uuid, d.cookie, d.companyID)
+        status, errStatus := d.client.Status(uuid)
         if errStatus != nil {
             return nil, errStatus
         }
@@ -41,7 +38,7 @@ func (d Downloader) Download() (*file.File, error) {
         }
     }
 
-    data, err := d.client.Download(uuid, d.cookie, d.companyID)
+    data, err := d.client.Download(uuid)
     if err != nil {
         return nil, err
     }

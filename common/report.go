@@ -16,6 +16,10 @@ type Report struct {
     downloader IDownloader
 }
 
+func (r *Report) Key() string {
+    return r.key
+}
+
 func NewReport(key string, downloader IDownloader) *Report {
     return &Report{key, downloader}
 }

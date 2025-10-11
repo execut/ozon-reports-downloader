@@ -2,20 +2,22 @@ package analytics
 
 import (
     "encoding/json"
-    "github.com/google/uuid"
     "time"
+
+    "github.com/google/uuid"
 
     "github.com/execut/ozon-reports-downloader/common"
 )
 
 type Client struct {
+    commonClient *common.Client
 }
 
-func NewClient() *Client {
-    return &Client{}
+func NewClient(commonClient *common.Client) *Client {
+    return &Client{commonClient: commonClient}
 }
 
-func (c *Client) BeginDownload(prevDate time.Time, cookie string, companyID int64) (*uuid.UUID, error) {
+func (c *Client) BeginDownload(prevDate time.Time) (*uuid.UUID, error) {
     now := time.Now().In(time.UTC)
     atFrom := prevDate.Truncate(time.Hour*24).AddDate(0, 0, 1)
     atTo := now.Truncate(time.Hour * 24).Add(-time.Second)
@@ -27,7 +29,7 @@ func (c *Client) BeginDownload(prevDate time.Time, cookie string, companyID int6
     }
     url := "https://seller.ozon.ru/api/v1/report/data-v1-xlsx"
 
-    bodyBytes, err := common.DoRequest(data, url, cookie, companyID)
+    bodyBytes, err := c.commonClient.DoRequest(data, url)
     if err != nil {
         return nil, err
     }
@@ -46,8 +48,8 @@ func (c *Client) BeginDownload(prevDate time.Time, cookie string, companyID int6
     return &uuidValue, nil
 }
 
-func (c *Client) Status(code *uuid.UUID, cookie string, companyID int64) (*StatusResponse, error) {
-    data, err := common.DoGetRequest(struct{}{}, "https://seller.ozon.ru/api/v1/report/status/"+code.String(), cookie, companyID)
+func (c *Client) Status(code *uuid.UUID) (*StatusResponse, error) {
+    data, err := c.commonClient.DoGetRequest(struct{}{}, "https://seller.ozon.ru/api/v1/report/status/"+code.String())
     if err != nil {
         return nil, err
     }
@@ -61,8 +63,8 @@ func (c *Client) Status(code *uuid.UUID, cookie string, companyID int64) (*Statu
     return response, err
 }
 
-func (c *Client) Download(code *uuid.UUID, cookie string, companyID int64) ([]byte, error) {
-    data, err := common.DoGetRequest(struct{}{}, "https://seller.ozon.ru/api/v1/report/download/"+code.String(), cookie, companyID)
+func (c *Client) Download(code *uuid.UUID) ([]byte, error) {
+    data, err := c.commonClient.DoGetRequest(struct{}{}, "https://seller.ozon.ru/api/v1/report/download/"+code.String())
     if err != nil {
         return nil, err
     }

@@ -2,21 +2,27 @@ package prices
 
 import (
     "encoding/json"
+    "strconv"
+
     "github.com/execut/ozon-reports-downloader/common"
     "github.com/google/uuid"
-    "strconv"
 )
 
 const urlsPrefix = "https://seller.ozon.ru/api/pricing-report-service/v1/report"
 
 type Client struct {
+    commonClient *common.Client
+    companyID    int64
 }
 
-func NewClient() *Client {
-    return &Client{}
+func NewClient(commonClient *common.Client, companyID int64) *Client {
+    return &Client{
+        commonClient: commonClient,
+        companyID:    companyID,
+    }
 }
 
-func (c *Client) BeginDownload(companyID int64, cookie string) (*uuid.UUID, error) {
+func (c *Client) BeginDownload() (*uuid.UUID, error) {
     data := StartPayload{
         IsSuperEconomEnabled: true,
         PriceColorIndex:      []string{"1", "2", "3", "0"},
@@ -24,7 +30,7 @@ func (c *Client) BeginDownload(companyID int64, cookie string) (*uuid.UUID, erro
     }
     url := urlsPrefix + "/new"
 
-    bodyBytes, err := common.DoRequest(data, url, cookie, companyID)
+    bodyBytes, err := c.commonClient.DoRequest(data, url)
     if err != nil {
         return nil, err
     }
@@ -43,11 +49,11 @@ func (c *Client) BeginDownload(companyID int64, cookie string) (*uuid.UUID, erro
     return &uuidValue, nil
 }
 
-func (c *Client) Status(code *uuid.UUID, cookie string, companyID int64) (*StatusResponse, error) {
+func (c *Client) Status(code *uuid.UUID) (*StatusResponse, error) {
     payload := StatusPayload{
         Code: code.String(),
     }
-    data, err := common.DoRequest(payload, urlsPrefix+"/status", cookie, companyID)
+    data, err := c.commonClient.DoRequest(payload, urlsPrefix+"/status")
     if err != nil {
         return nil, err
     }
@@ -61,8 +67,8 @@ func (c *Client) Status(code *uuid.UUID, cookie string, companyID int64) (*Statu
     return response, err
 }
 
-func (c *Client) Download(code *uuid.UUID, cookie string, companyID int64) ([]byte, error) {
-    data, err := common.DoGetRequest(struct{}{}, "https://seller.ozon.ru/api/pricing-report-service/report/download/"+strconv.FormatInt(companyID, 10)+"/"+code.String(), cookie, companyID)
+func (c *Client) Download(code *uuid.UUID) ([]byte, error) {
+    data, err := c.commonClient.DoGetRequest(struct{}{}, "https://seller.ozon.ru/api/pricing-report-service/report/download/"+strconv.FormatInt(c.companyID, 10)+"/"+code.String())
     if err != nil {
         return nil, err
     }

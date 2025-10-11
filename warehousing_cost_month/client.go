@@ -1,25 +1,31 @@
 package warehousing_cost_month
 
 import (
-    "github.com/execut/ozon-reports-downloader/common"
     "strconv"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/common"
 )
 
 type Client struct {
+    client    common.Client
+    companyID int64
 }
 
-func NewClient() *Client {
-    return &Client{}
+func NewClient(client common.Client, companyID int64) *Client {
+    return &Client{
+        client:    client,
+        companyID: companyID,
+    }
 }
 
-func (c *Client) Download(companyID int64, cookie string) ([]byte, error) {
+func (c *Client) Download() ([]byte, error) {
     now := time.Now().In(time.UTC)
-    baseURL := "https://seller.ozon.ru/api/site/self-placement-gateway/api/reports/" + strconv.FormatInt(companyID, 10) + "/placement/periods/date/items-report/download"
+    baseURL := "https://seller.ozon.ru/api/site/self-placement-gateway/api/reports/" + strconv.FormatInt(c.companyID, 10) + "/placement/periods/date/items-report/download"
     payload := &RequestPayload{
         Date: now.Format(time.DateOnly),
     }
-    bodyBytes, err := common.DoRequest(payload, baseURL, cookie, companyID)
+    bodyBytes, err := c.client.DoRequest(payload, baseURL)
     if err != nil {
         return nil, err
     }

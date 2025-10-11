@@ -8,14 +8,14 @@ type Downloader struct {
     client *Client
 }
 
-func NewDownloader() *Downloader {
+func NewDownloader(client *Client) *Downloader {
     return &Downloader{
-        client: &Client{},
+        client: client,
     }
 }
 
-func (d Downloader) Download(companyID int64, cookie string) (*file.File, error) {
-    data, err := d.client.Download(companyID, cookie)
+func (d Downloader) Download() (*file.File, error) {
+    data, err := d.client.Download()
     if err != nil {
         return nil, err
     }

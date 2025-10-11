@@ -11,9 +11,9 @@ type Downloader struct {
     cookie         string
 }
 
-func NewDownloader(companyID int64, organizationID int64, cookie string) *Downloader {
+func NewDownloader(companyID int64, organizationID int64, cookie string, client *Client) *Downloader {
     return &Downloader{
-        client:         &Client{},
+        client:         client,
         companyID:      companyID,
         organizationID: organizationID,
         cookie:         cookie,
@@ -21,7 +21,7 @@ func NewDownloader(companyID int64, organizationID int64, cookie string) *Downlo
 }
 
 func (d Downloader) Download() (*file.File, error) {
-    data, err := d.client.Download(d.companyID, d.organizationID, d.cookie)
+    data, err := d.client.Download()
     if err != nil {
         return nil, err
     }

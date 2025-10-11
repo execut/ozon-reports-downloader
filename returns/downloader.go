@@ -11,22 +11,18 @@ import (
 type Downloader struct {
     client      *Client
     returnsType ReturnsType
-    companyID   int64
-    cookie      string
 }
 
-func NewDownloader(returnsType ReturnsType, companyID int64, cookie string) *Downloader {
+func NewDownloader(returnsType ReturnsType, client *Client) *Downloader {
     return &Downloader{
-        client:      &Client{},
+        client:      client,
         returnsType: returnsType,
-        companyID:   companyID,
-        cookie:      cookie,
     }
 }
 
 func (d Downloader) Download() (*file.File, error) {
     date := time.Now()
-    uuid, err := d.client.BeginDownload(d.companyID, d.returnsType, d.cookie, date)
+    uuid, err := d.client.BeginDownload(d.returnsType, date)
     if err != nil {
         return nil, err
     }
@@ -40,7 +36,7 @@ func (d Downloader) Download() (*file.File, error) {
 
     for {
         time.Sleep(time.Second)
-        status, errStatus = d.client.Status(uuid, d.companyID, d.cookie)
+        status, errStatus = d.client.Status(uuid)
         if errStatus != nil {
             return nil, errStatus
         }

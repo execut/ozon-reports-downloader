@@ -5,14 +5,17 @@ import (
 )
 
 type Client struct {
+    commonClient *common.Client
 }
 
-func NewClient() *Client {
-    return &Client{}
+func NewClient(commonClient *common.Client) *Client {
+    return &Client{
+        commonClient: commonClient,
+    }
 }
 
-func (c *Client) Download(cookie string, companyID int64) ([]byte, error) {
-    bodyBytes, err := common.DoRequest(Payload{WarehouseType: "All"}, "https://seller.ozon.ru/api/som-stocks-bff/Report/GetStockApiReport", cookie, companyID)
+func (c *Client) Download() ([]byte, error) {
+    bodyBytes, err := c.commonClient.DoRequest(Payload{WarehouseType: "All"}, "https://seller.ozon.ru/api/som-stocks-bff/Report/GetStockApiReport")
     if err != nil {
         return nil, err
     }

@@ -3,8 +3,9 @@ package search_promotion_orders
 import (
     "errors"
     "fmt"
-    "github.com/execut/ozon-reports-downloader/file"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/file"
 )
 
 type Downloader struct {
@@ -14,17 +15,14 @@ type Downloader struct {
     cookie         string
 }
 
-func NewDownloader(companyID int64, organizationID int64, cookie string) *Downloader {
+func NewDownloader(client *Client) *Downloader {
     return &Downloader{
-        client:         &Client{},
-        companyID:      companyID,
-        organizationID: organizationID,
-        cookie:         cookie,
+        client: client,
     }
 }
 
 func (d Downloader) Download() (*file.File, error) {
-    uuid, err := d.client.BeginDownload(d.companyID, d.organizationID, d.cookie)
+    uuid, err := d.client.BeginDownload()
     if err != nil {
         return nil, err
     }
@@ -38,7 +36,7 @@ func (d Downloader) Download() (*file.File, error) {
 
     for {
         time.Sleep(time.Second * 10)
-        reportList, errStatus = d.client.ReportsList(d.companyID, d.organizationID, d.cookie)
+        reportList, errStatus = d.client.ReportsList()
         if errStatus != nil {
             return nil, errStatus
         }
@@ -54,7 +52,7 @@ func (d Downloader) Download() (*file.File, error) {
         }
     }
 
-    data, err := d.client.Download(reportList.Items[0].Meta.UUID, d.companyID, d.organizationID, d.cookie)
+    data, err := d.client.Download(reportList.Items[0].Meta.UUID)
     if err != nil {
         return nil, err
     }

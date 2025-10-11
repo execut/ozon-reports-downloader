@@ -2,21 +2,23 @@ package search_promotion_orders
 
 import (
     "encoding/json"
-    "github.com/google/uuid"
-    "github.com/execut/ozon-reports-downloader/common"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/common"
+    "github.com/google/uuid"
 )
 
 const urlsPrefix = "https://performance.ozon.ru/seller-api/search-performance-cpo/mainpage/v1/statistic"
 
 type Client struct {
+    client *common.Client
 }
 
-func NewClient() *Client {
-    return &Client{}
+func NewClient(client *common.Client) *Client {
+    return &Client{client: client}
 }
 
-func (c *Client) BeginDownload(companyID int64, organizationID int64, cookie string) (*uuid.UUID, error) {
+func (c *Client) BeginDownload() (*uuid.UUID, error) {
     now := time.Now().Round(time.Hour * 24)
     atTo := now.Truncate(time.Hour*24).AddDate(0, 0, -1)
     atFrom := now.Truncate(time.Hour*24).AddDate(0, -2, 0)
@@ -28,7 +30,7 @@ func (c *Client) BeginDownload(companyID int64, organizationID int64, cookie str
     }
     url := urlsPrefix + "/orders/generate"
 
-    bodyBytes, err := common.DoPostPerformanceRequest(data, url, companyID, organizationID, cookie)
+    bodyBytes, err := c.client.DoPostPerformanceRequest(data, url)
     if err != nil {
         return nil, err
     }
@@ -47,8 +49,8 @@ func (c *Client) BeginDownload(companyID int64, organizationID int64, cookie str
     return &uuidValue, nil
 }
 
-func (c *Client) ReportsList(companyID int64, organizationID int64, cookie string) (*ReportResponse, error) {
-    data, err := common.DoGetPerformanceRequest(urlsPrefix+"/reports", companyID, organizationID, cookie)
+func (c *Client) ReportsList() (*ReportResponse, error) {
+    data, err := c.client.DoGetPerformanceRequest(urlsPrefix + "/reports")
     if err != nil {
         return nil, err
     }
@@ -62,8 +64,8 @@ func (c *Client) ReportsList(companyID int64, organizationID int64, cookie strin
     return response, err
 }
 
-func (c *Client) Download(uuid string, companyID int64, organizationID int64, cookie string) ([]byte, error) {
-    data, err := common.DoGetPerformanceRequest(urlsPrefix+"/report?UUID="+uuid, companyID, organizationID, cookie)
+func (c *Client) Download(uuid string) ([]byte, error) {
+    data, err := c.client.DoGetPerformanceRequest(urlsPrefix + "/report?UUID=" + uuid)
     if err != nil {
         return nil, err
     }

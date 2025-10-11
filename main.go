@@ -2,6 +2,7 @@ package main
 
 import (
     "fmt"
+    "log"
     "os"
     "path/filepath"
     "time"
@@ -32,24 +33,25 @@ func main() {
     fmt.Printf("Begin report download for date %v\n", prevDate)
 
     config := ReadConfig()
+    client := common.NewClient(config.Cookie, config.CompanyID, config.OrganizationID, config.SecChUa, config.UserAgent)
     reports := []*common.Report{
-        common.NewReport("trafarets", trafarets_detalization.NewDownloader(config.CompanyID, config.OrganizationID, config.Cookie)),
+        common.NewReport("trafarets", trafarets_detalization.NewDownloader(config.CompanyID, config.OrganizationID, config.Cookie, trafarets_detalization.NewClient(client))),
         //common.NewReport("search-promotion-orders", search_promotion_orders.NewDownloader(config.CompanyID, config.OrganizationID, config.Cookie)),
-        common.NewReport("orders-fbo", orders.NewDownloader(common.DeliveryTypeFBO, config.CompanyID, config.Cookie, time.Now())),
-        common.NewReport("orders-fbs", orders.NewDownloader(common.DeliveryTypeFBS, config.CompanyID, config.Cookie, time.Now())),
-        common.NewReport("returns-fbos", returns.NewDownloader(returns.ReturnsTypeFBOS, config.CompanyID, config.Cookie)),
-        common.NewReport("returns-realfbs", returns.NewDownloader(returns.ReturnsTypeRealFBS, config.CompanyID, config.Cookie)),
-        common.NewReport("analytics", analytics.NewDownloader(prevDate, config.Cookie, config.CompanyID)),
-        common.NewReport("accruals", accruals.NewDownloader(config.Cookie, config.CompanyID)),
-        common.NewReport("leftovers", leftovers.NewDownloader(config.Cookie, config.CompanyID)),
-        common.NewReport("warehousing-cost", warehousing_cost.NewDownloader(config.CompanyID, config.Cookie)),
-        common.NewReport("prices", prices.NewDownloader(config.CompanyID, config.Cookie)),
+        common.NewReport("orders-fbo", orders.NewDownloader(common.DeliveryTypeFBO, time.Now(), orders.NewClient(client, config.CompanyID))),
+        common.NewReport("orders-fbs", orders.NewDownloader(common.DeliveryTypeFBS, time.Now(), orders.NewClient(client, config.CompanyID))),
+        common.NewReport("returns-fbos", returns.NewDownloader(returns.ReturnsTypeFBOS, returns.NewClient(client, config.CompanyID))),
+        common.NewReport("returns-realfbs", returns.NewDownloader(returns.ReturnsTypeRealFBS, returns.NewClient(client, config.CompanyID))),
+        common.NewReport("analytics", analytics.NewDownloader(prevDate, analytics.NewClient(client))),
+        common.NewReport("accruals", accruals.NewDownloader(accruals.NewClient(client, config.CompanyID))),
+        common.NewReport("leftovers", leftovers.NewDownloader(leftovers.NewClient(client))),
+        common.NewReport("warehousing-cost", warehousing_cost.NewDownloader(warehousing_cost.NewClient(config.CompanyID, client))),
+        common.NewReport("prices", prices.NewDownloader(prices.NewClient(client, config.CompanyID))),
     }
 
     for _, report := range reports {
         err := report.Run()
         if err != nil {
-            panic(err)
+            log.Fatalf("report %s failed. Error: %e", report.Key(), err)
         }
 
         time.Sleep(time.Second)
@@ -78,4 +80,6 @@ type Config struct {
     Cookie         string `yaml:"cookie"`
     CompanyID      int64  `yaml:"companyID"`
     OrganizationID int64  `yaml:"organizationID"`
+    SecChUa        string `yaml:"secChUa"`
+    UserAgent      string `yaml:"userAgent"`
 }

@@ -1,18 +1,22 @@
 package trafarets_detalization
 
 import (
-    "github.com/execut/ozon-reports-downloader/common"
     "time"
+
+    "github.com/execut/ozon-reports-downloader/common"
 )
 
 type Client struct {
+    client *common.Client
 }
 
-func NewClient() *Client {
-    return &Client{}
+func NewClient(client *common.Client) *Client {
+    return &Client{
+        client: client,
+    }
 }
 
-func (c *Client) Download(companyID int64, organizationID int64, cookie string) ([]byte, error) {
+func (c *Client) Download() ([]byte, error) {
     now := time.Now().In(time.UTC)
     atTo := now.Truncate(time.Hour * 24).Add(-time.Second)
     atFrom := now.Truncate(time.Hour*24).AddDate(-3, 0, 0)
@@ -23,7 +27,7 @@ func (c *Client) Download(companyID int64, organizationID int64, cookie string) 
         DateTo:        atTo.Format(time.DateOnly),
         CampaignTypes: []string{},
     }
-    bodyBytes, err := common.DoPostPerformanceRequest(payload, baseURL, companyID, organizationID, cookie)
+    bodyBytes, err := c.client.DoPostPerformanceRequest(payload, baseURL)
     if err != nil {
         return nil, err
     }

@@ -13,13 +13,18 @@ import (
 )
 
 type Client struct {
+    client    *common.Client
+    companyID int64
 }
 
-func NewClient() *Client {
-    return &Client{}
+func NewClient(client *common.Client, companyID int64) *Client {
+    return &Client{
+        client:    client,
+        companyID: companyID,
+    }
 }
 
-func (c *Client) BeginDownload(companyID int64, returnsType ReturnsType, cookie string, now time.Time) (*uuid.UUID, error) {
+func (c *Client) BeginDownload(returnsType ReturnsType, now time.Time) (*uuid.UUID, error) {
     atTo := now.Truncate(time.Hour * 24).Add(-time.Second)
     var data interface{}
     var atFrom time.Time
@@ -27,7 +32,7 @@ func (c *Client) BeginDownload(companyID int64, returnsType ReturnsType, cookie 
     case ReturnsTypeFBOS:
         atFrom = now.Truncate(time.Hour*24).AddDate(0, -3, 0)
         data = StartPayloadFBOS{
-            SellerId:       companyID,
+            SellerId:       c.companyID,
             TimeZoneOffset: 3,
             Parameters: PayloadParameters{
                 DateFrom:      atFrom,
@@ -38,7 +43,7 @@ func (c *Client) BeginDownload(companyID int64, returnsType ReturnsType, cookie 
     case ReturnsTypeRealFBS:
         atFrom = now.Truncate(time.Hour*24).AddDate(2022, 4, 1)
         data = StartPayloadRealFBS{
-            SellerId:       companyID,
+            SellerId:       c.companyID,
             TimeZoneOffset: 3,
             Parameters: PayloadParameters{
                 DateFrom:      atFrom,
@@ -52,7 +57,7 @@ func (c *Client) BeginDownload(companyID int64, returnsType ReturnsType, cookie 
 
     url := "https://seller.ozon.ru/api/site/seller-returns-report-service/generate"
 
-    bodyBytes, err := common.DoRequest(data, url, cookie, companyID)
+    bodyBytes, err := c.client.DoRequest(data, url)
     if err != nil {
         return nil, err
     }
@@ -71,12 +76,12 @@ func (c *Client) BeginDownload(companyID int64, returnsType ReturnsType, cookie 
     return &uuidValue, nil
 }
 
-func (c *Client) Status(code *uuid.UUID, companyID int64, cookie string) (*StatusResponse, error) {
-    data, err := common.DoRequest(StatusPayload{
+func (c *Client) Status(code *uuid.UUID) (*StatusResponse, error) {
+    data, err := c.client.DoRequest(StatusPayload{
         Code:           code.String(),
-        SellerId:       companyID,
+        SellerId:       c.companyID,
         TimeZoneOffset: 3,
-    }, "https://seller.ozon.ru/api/site/seller-returns-report-service/status", cookie, companyID)
+    }, "https://seller.ozon.ru/api/site/seller-returns-report-service/status")
     if err != nil {
         return nil, err
     }

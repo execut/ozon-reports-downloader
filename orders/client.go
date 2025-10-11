@@ -10,13 +10,18 @@ import (
 )
 
 type Client struct {
+    commonClient *common.Client
+    companyID    int64
 }
 
-func NewClient() *Client {
-    return &Client{}
+func NewClient(commonClient *common.Client, companyID int64) *Client {
+    return &Client{
+        commonClient: commonClient,
+        companyID:    companyID,
+    }
 }
 
-func (c *Client) BeginDownload(orderType common.DeliveryType, companyID int64, cookie string, currentTime time.Time) (*uuid.UUID, error) {
+func (c *Client) BeginDownload(orderType common.DeliveryType, currentTime time.Time) (*uuid.UUID, error) {
     atTo := currentTime.Truncate(time.Hour * 24).Add(-time.Second)
     atFrom := currentTime.Truncate(time.Hour*24).AddDate(0, -3, 0)
     data := StartPayload{
@@ -30,12 +35,12 @@ func (c *Client) BeginDownload(orderType common.DeliveryType, companyID int64, c
             JewelryCodes:  true,
         },
         Lang:      "RU",
-        CompanyID: strconv.FormatInt(companyID, 10),
+        CompanyID: strconv.FormatInt(c.companyID, 10),
         SortDir:   "desc",
     }
     url := "https://seller.ozon.ru/api/report/company/postings"
 
-    bodyBytes, err := common.DoRequest(data, url, cookie, companyID)
+    bodyBytes, err := c.commonClient.DoRequest(data, url)
     if err != nil {
         return nil, err
     }
@@ -54,8 +59,8 @@ func (c *Client) BeginDownload(orderType common.DeliveryType, companyID int64, c
     return &uuidValue, nil
 }
 
-func (c *Client) Status(code *uuid.UUID, cookie string, companyID int64) (*StatusResponse, error) {
-    data, err := common.DoRequest(StatusPayload{Code: code.String()}, "https://seller.ozon.ru/api/report/status", cookie, companyID)
+func (c *Client) Status(code *uuid.UUID) (*StatusResponse, error) {
+    data, err := c.commonClient.DoRequest(StatusPayload{Code: code.String()}, "https://seller.ozon.ru/api/report/status")
     if err != nil {
         return nil, err
     }
@@ -69,8 +74,8 @@ func (c *Client) Status(code *uuid.UUID, cookie string, companyID int64) (*Statu
     return response, err
 }
 
-func (c *Client) Download(code *uuid.UUID, companyID int64, cookie string) (*DownloadResult, error) {
-    data, err := common.DoRequest(DownloadPayload{Code: code.String(), CompanyID: companyID}, "https://seller.ozon.ru/api/report/download", cookie, companyID)
+func (c *Client) Download(code *uuid.UUID) (*DownloadResult, error) {
+    data, err := c.commonClient.DoRequest(DownloadPayload{Code: code.String(), CompanyID: c.companyID}, "https://seller.ozon.ru/api/report/download")
     if err != nil {
         return nil, err
     }

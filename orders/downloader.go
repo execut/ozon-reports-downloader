@@ -15,17 +15,13 @@ type Downloader struct {
     time         time.Time
     client       *Client
     deliveryType common.DeliveryType
-    companyID    int64
-    cookie       string
 }
 
-func NewDownloader(deliveryType common.DeliveryType, companyID int64, cookie string, time time.Time) *Downloader {
+func NewDownloader(deliveryType common.DeliveryType, time time.Time, client *Client) *Downloader {
     return &Downloader{
         time:         time,
-        client:       NewClient(),
+        client:       client,
         deliveryType: deliveryType,
-        companyID:    companyID,
-        cookie:       cookie,
     }
 }
 
@@ -34,7 +30,7 @@ func (d Downloader) Download() (*file.File, error) {
     isFirstFile := true
     var data []byte
     for {
-        uuid, err := d.client.BeginDownload(d.deliveryType, d.companyID, d.cookie, currentTime)
+        uuid, err := d.client.BeginDownload(d.deliveryType, currentTime)
         if err != nil {
             return nil, err
         }
@@ -42,7 +38,7 @@ func (d Downloader) Download() (*file.File, error) {
         fmt.Println("Downloading order", uuid)
         for {
             time.Sleep(time.Second)
-            status, errStatus := d.client.Status(uuid, d.cookie, d.companyID)
+            status, errStatus := d.client.Status(uuid)
             if errStatus != nil {
                 return nil, errStatus
             }
@@ -53,7 +49,7 @@ func (d Downloader) Download() (*file.File, error) {
             }
         }
 
-        fileData, err := d.client.Download(uuid, d.companyID, d.cookie)
+        fileData, err := d.client.Download(uuid)
         if err != nil {
             return nil, err
         }
