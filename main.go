@@ -1,7 +1,6 @@
 package main
 
 import (
-    "fmt"
     "log"
     "os"
     "path/filepath"
@@ -19,17 +18,17 @@ import (
 )
 
 func main() {
-    if len(os.Args) < 2 {
-        panic("prev analytics date as first argument needed")
-    }
+    //if len(os.Args) < 2 {
+    //    panic("prev analytics date as first argument needed")
+    //}
 
-    argsWithProg := os.Args[1]
-    prevDate, err := time.Parse(time.DateOnly, argsWithProg)
-    if err != nil {
-        panic(err)
-    }
-
-    fmt.Printf("Begin report download for date %v\n", prevDate)
+    //argsWithProg := os.Args[1]
+    //prevDate, err := time.Parse(time.DateOnly, argsWithProg)
+    //if err != nil {
+    //    panic(err)
+    //}
+    //
+    //fmt.Printf("Begin report download for date %v\n", prevDate)
 
     config := ReadConfig()
     client := common.NewClient(config.Cookie, config.CompanyID, config.OrganizationID, config.SecChUa, config.UserAgent)
