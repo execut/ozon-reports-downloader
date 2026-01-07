@@ -24,19 +24,14 @@ func NewReport(key string, downloader IDownloader) *Report {
     return &Report{key, downloader}
 }
 
-var counter = 0
-
 func (r *Report) Run() error {
-    counter++
-    key := r.key
-    key = fmt.Sprintf("%02d-", counter) + key
-    fmt.Println("Begin report: " + key)
+    fmt.Println("Begin report: " + r.key)
     ordersFile, err := r.downloader.Download()
     if err != nil {
         return err
     }
 
-    err = r.saveFile(key, ordersFile)
+    err = r.saveFile(ordersFile)
     if err != nil {
         return err
     }
@@ -44,8 +39,8 @@ func (r *Report) Run() error {
     return nil
 }
 
-func (r *Report) saveFile(fileName string, fileForSave *file.File) error {
-    path := "reports/" + fileName + "." + fileForSave.FileType()
+func (r *Report) saveFile(fileForSave *file.File) error {
+    path := "reports/" + r.key + "." + fileForSave.FileType()
     fmt.Println("Saving report: " + path)
     fo, err := os.Create(path)
     if err != nil {
